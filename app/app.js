@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 
 const routes = require('./routes');
@@ -8,7 +9,9 @@ const errorMiddleware = require('./middleware/errors');
 const app = express();
 
 // Pre Middleware
-app.use(bodyParser.json());
+app
+  .use(helmet.hidePoweredBy()) // Consider other security options
+  .use(bodyParser.json());
 
 // Routes
 app.use('/', routes);
