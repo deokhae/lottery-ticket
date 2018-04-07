@@ -12,10 +12,10 @@
   "private": true,
   "scripts": {
     "start": "node index.js",
-    "start-monitor": "nodemon npm start",
+    "start:watch": "nodemon npm start",
     "lint": "./node_modules/.bin/eslint .",
     "test": "./node_modules/.bin/ava",
-    "test-monitor": "nodemon --exec 'npm test'"
+    "test:watch": "npm test -- --watch"
   },
   "ava": {
     "files": [

@@ -53,7 +53,7 @@ If you do not have node.js installed:
 
 From the checked-out application folder, run: 
 
-`npm start` or `npm run start-monitor` to autorun on changes.
+`npm start` or `npm run start:watch` to autorun on changes.
 
 You should see output like this: 
 
@@ -80,7 +80,7 @@ To shutdown the server simply send a `^C`.
 
 To run the existing (sample) tests simply use: 
 
-`npm test` or `npm run test-monitor` to autorun on changes.
+`npm test` or `npm run test:watch` to autorun on changes.
 
 You should see output like this: 
 
