@@ -1,4 +1,3 @@
-
 process.on('unhandledRejection', error => {
   console.warn('unhandledRejection');
   console.error(error);
@@ -14,14 +13,29 @@ process.on('uncaughtException', error => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-const expressApp = require('./app/app');
-const port = process.env.PORT || 3000;
 
-const httpServer = expressApp.listen(port);
-console.log(`App listening on port ${port}`);
+const initializeGameResults = require('./app/initializers').initializeGameResults;
+
+async function startup() {
+  await initializeGameResults({ log: true });
+
+  const expressApp = require('./app/app');
+  const port = process.env.PORT || 3000;
+  const httpServer = await expressApp.listen(port);
+
+  console.log(`App listening on port ${port}`);
+  return httpServer;
+}
+
+const httpServer = startup();
 
 function shutdown() {
-  httpServer.close();
+  if (httpServer) httpServer.close();
   console.log('\nApp shutdown');
   process.exit(0);
 }
+
+
+
+
+
