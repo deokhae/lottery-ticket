@@ -14,3 +14,14 @@ test('App Includes Error Handler Middleware', t => {
   const routes = app._router.stack.map(layer => layer.name);
   t.true(routes.includes('errorHandler'));
 });
+
+test('App Includes Middleware To Hide X-Powered-By Header', t => {
+  const routes = app._router.stack.map(layer => layer.name);
+  t.true(routes.includes('hidePoweredBy'));
+});
+
+test('App Includes JSON Parser Middleware', t => {
+  const routes = app._router.stack.map(layer => layer.name);
+  t.true(routes.includes('jsonParser'));
+});
+
