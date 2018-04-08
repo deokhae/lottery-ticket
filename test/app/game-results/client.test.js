@@ -9,7 +9,7 @@ const fetchGameResults = require(`${GAME_RESULTS_PATH}/client`);
 test('Returns Game Results', async t => {
   td
     .when(axios.get('https://games.api.lottery.com/api/v2.0/results?game=59bc2b6031947b9daf338d32'))
-    .thenResolve('SOME JSON GAME RESULTS');
+    .thenResolve({ data: 'SOME JSON GAME RESULTS' });
 
   const gameResults = await fetchGameResults();
 
@@ -21,7 +21,7 @@ test('Returns Null On Error', async t => {
     .when(axios.get)
     .thenReject(new Error('SOMETHING BAD HAPPENED'));
 
-  const gameResults = await fetchGameResults({log: false});
+  const gameResults = await fetchGameResults({ log: false });
 
   t.is(gameResults, null);
 });

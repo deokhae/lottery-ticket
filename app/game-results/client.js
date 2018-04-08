@@ -25,7 +25,8 @@ function logErrors(err) {
 
 async function fetch({ log = true } = {}) {
   try {
-    return await axios.get(API);
+    const res =  await axios.get(API);
+    return res.data;
   } catch (err) {
     log && logErrors(err);
     return null;
