@@ -14,6 +14,7 @@ const VALID_REQUEST_BODY = deepFreeze({
     },
     {
       'whiteBalls': [1, 2, 1, 4, 5],
+      'whiteBalls': [1, 2, 6, 4, 5],
       'powerBall': 1
     }
   ],
@@ -95,6 +96,12 @@ test('400s With Missing Whiteballs', async t => {
   const req = request((body) => delete body.picks[1].whiteBalls);
 
   await checkTicket(req, expectErrorResponse(t, /"whiteBalls" is required/));
+});
+
+test('400s With Any Duplicate Whiteballs', async t => {
+  const req = request((body) => body.picks[1].whiteBalls[0] = body.picks[1].whiteBalls[1]);
+
+  await checkTicket(req, expectErrorResponse(t, /"picks" at position 1 fails because \[child "whiteBalls" fails because \["whiteBalls" position 1 contains a duplicate value/));
 });
 
 test('400s With A Powerball Below The Allowed Range (1 - 26)', async t => {
