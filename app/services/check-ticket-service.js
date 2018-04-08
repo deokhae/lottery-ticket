@@ -1,5 +1,7 @@
+const _ = require('lodash');
 const Joi = require('joi');
 
+const calculateTicketPickPrizes = require('../models/calculate-ticket-pick-prizes');
 const { BadRequestError } = require('../errors');
 
 
@@ -52,14 +54,45 @@ const ticketSchema = Joi
 async function getValidTicket(req) {
   try {
     return await Joi.validate(req.body, ticketSchema);
-  } catch(err) {
+  } catch (err) {
     throw new BadRequestError(err);
   }
 }
 
 async function checkTicketService(req) {
-  const ticket = await getValidTicket(req);
-  return { message: 'Ticket Checked' };
+  const ticket = _.cloneDeep(await getValidTicket(req));
+  ticket.summary = {
+    prizeTotal: 0,
+    errors: []
+  };
+
+  const prizePicks = calculateTicketPickPrizes(ticket);
+  if (!prizePicks) {
+    ticket.summary.errors.push({ drawDate: 'NOT_FOUND' });
+    return ticket;
+  }
+
+  prizePicks.forEach((prizePick, index) => {
+    const {
+      won = false,
+      prize: amount = null,
+      whiteBalls = null,
+      powerBall = null
+    } = prizePick;
+
+    ticket
+      .picks[index]
+      .prize = { won, amount, whiteBalls, powerBall };
+  });
+
+  ticket.summary.prizeTotal = ticket
+    .picks
+    .filter((pick) => pick.prize.won)
+    .reduce(
+      (prizeTotal, pick) => prizeTotal + pick.prize.amount,
+      0);
+
+  return ticket;
 }
 
 module.exports = checkTicketService;
