@@ -7,8 +7,7 @@ async function initialize({ log = false } = {}) {
   if (!gameResultsWereCached) throw new Error('Unable to fetch and cache initial game results');
 
   if (log && process.env.NODE_ENV !== 'production') {
-    const gameResults = fetch();
-    console.log(`${JSON.stringify(gameResults, null, 2)}\n`);
+    console.log(`${JSON.stringify(fetch(), null, 2)}\n`);
   }
 
   return gameResultsWereCached;

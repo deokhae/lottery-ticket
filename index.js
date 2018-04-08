@@ -17,7 +17,7 @@ process.on('SIGTERM', shutdown);
 const initializeGameResults = require('./app/initializers').initializeGameResults;
 
 async function startup() {
-  await initializeGameResults({ log: true });
+  await initializeGameResults({ log: false });
 
   const expressApp = require('./app/app');
   const port = process.env.PORT || 3000;

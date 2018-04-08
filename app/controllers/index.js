@@ -9,7 +9,7 @@ const {
 
 function respondWithError(res, err) {
   if (err instanceof BadRequestError) {
-    res.status(400)
+    res.status(400);
     res.json({ error: err.message });
   } else {
     console.error(err);
