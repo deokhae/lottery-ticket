@@ -8,6 +8,7 @@ test('Router Setup', t => {
     .map(layer => layer.route.path);
 
   t.true(routes.includes('/'));
+  t.true(routes.includes('/check-ticket'));
   t.true(routes.includes('/fail'));
 });
 
