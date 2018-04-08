@@ -74,24 +74,18 @@ function assignPrizesToPicks(ticket, prizePicks) {
   });
 }
 
-function assignPrizeSummaryToTicket(ticket) {
-  ticket
+// NOTE: Theoretically, someone could win the grand prize twice which would throw the math off.
+function calculatePrizeTotal(ticket) {
+  return ticket
     .picks
     .filter((pick) => pick.prize.won)
-    .forEach((pick) => {
-      if (pick.prize.amount === 'GRAND_PRIZE') {
-        ticket.summary.wonGrandPrizeCount++;
-      } else {
-        ticket.summary.summablePrizeTotal += pick.prize.amount;
-      }
-    });
+    .reduce((prizeTotal, pick) => prizeTotal + pick.prize.amount, 0);
 }
 
 async function checkTicketService(req) {
   const ticket = _.cloneDeep(await getValidTicket(req));
   ticket.summary = {
-    summablePrizeTotal: 0,
-    wonGrandPrizeCount: 0,
+    prizeTotal: 0,
     errors: []
   };
 
@@ -102,7 +96,7 @@ async function checkTicketService(req) {
   }
 
   assignPrizesToPicks(ticket, prizePicks);
-  assignPrizeSummaryToTicket(ticket);
+  ticket.summary.prizeTotal = calculatePrizeTotal(ticket);
   return ticket;
 }
 

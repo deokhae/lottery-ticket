@@ -16,10 +16,6 @@ const VALID_REQUEST_BODY = deepFreeze({
       powerBall: 1
     },
     {
-      whiteBalls: [1, 2, 3, 4, 5], // Grand prize
-      powerBall: 1
-    },
-    {
       whiteBalls: [1, 2, 3, 4, 5], // All white balls
       powerBall: 2
     },
@@ -39,9 +35,9 @@ const VALID_REQUEST_BODY = deepFreeze({
   drawDate: '2017-11-09'
 });
 
+// NOTE: Theoretically, someone could win the grand prize twice which would throw the math off.
 const PICK_PRIZES = deepFreeze([
-  { won: true, prize: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }, // Grand prize
-  { won: true, prize: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }, // Grand prize
+  { won: true, prize: 74000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }, // Grand prize
   { won: true, prize: 1000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: null }, // All white balls
   { won: true, prize: 100, whiteBalls: [1, 2, 4, 5], powerBall: null }, // Four white balls
   { won: true, prize: 4, whiteBalls: null, powerBall: 1 }, // Just the power ball
@@ -53,12 +49,7 @@ const EXPECTED_RESPONSE_BODY = deepFreeze({
     { // Grand prize
       whiteBalls: [1, 2, 3, 4, 5],
       powerBall: 1,
-      prize: { won: true, amount: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }
-    },
-    { // Grand prize
-      whiteBalls: [1, 2, 3, 4, 5],
-      powerBall: 1,
-      prize: { won: true, amount: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }
+      prize: { won: true, amount: 74000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }
     },
     { // All white balls
       whiteBalls: [1, 2, 3, 4, 5],
@@ -82,7 +73,7 @@ const EXPECTED_RESPONSE_BODY = deepFreeze({
     }
   ],
   drawDate: new Date('2017-11-09T00:00:00.000Z'),
-  summary: { summablePrizeTotal: 1000104, wonGrandPrizeCount: 2, errors: [] }
+  summary: { prizeTotal: 75000104, errors: [] }
 });
 
 test('Check Valid Ticket 2', async t => {

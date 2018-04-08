@@ -1,5 +1,7 @@
+const GRAND_PRIZE_AMOUNT = 'GRAND_PRIZE';
+
 const POWERBALL_PRIZES_BY_WHITEBALL_COUNT = {
-  5: 'GRAND_PRIZE',
+  5: GRAND_PRIZE_AMOUNT,
   4: 50000,
   3: 100,
   2: 7,
@@ -22,7 +24,8 @@ function calculatePrize(powerBallWon, winningWhiteBallsCount) {
 function getDrawPickForDate(drawDate) {
   return {
     whiteBalls: new Set([1, 2, 3, 4, 5]),
-    powerBall: 4
+    powerBall: 4,
+    grandPrizeAmount: 74000000
   };
 }
 
@@ -40,7 +43,11 @@ function calculateTicketPickPrizes(ticket) {
       const winningWhiteBalls = pick.whiteBalls.filter(whiteBall => drawnWhiteBallsSet.has(whiteBall));
       const winningPowerBall = pick.powerBall === drawnPick.powerBall;
       const powerBallWon = 0 < winningPowerBall;
-      const prize = calculatePrize(powerBallWon, winningWhiteBalls.length);
+
+      let prize = calculatePrize(powerBallWon, winningWhiteBalls.length);
+      if (prize === GRAND_PRIZE_AMOUNT) {
+        prize = drawnPick.grandPrizeAmount;
+      }
 
       return {
         won: !!prize,
