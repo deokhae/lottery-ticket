@@ -1,26 +1,54 @@
-function getGameResultsForDrawDate(drawDate) {
-  return 'TODO';
+const POWERBALL_PRIZES_BY_WHITEBALL_COUNT = {
+  5: 'GRAND_PRIZE',
+  4: 50000,
+  3: 100,
+  2: 7,
+  1: 4,
+  0: 4
+};
+
+const WHITEBALL_ONLY_PRIZES_BY_COUNT = {
+  5: 1000000,
+  4: 100,
+  3: 7
+};
+
+function calculatePrize(powerBallWon, winningWhiteBallsCount) {
+  if (powerBallWon) return POWERBALL_PRIZES_BY_WHITEBALL_COUNT[winningWhiteBallsCount];
+  return WHITEBALL_ONLY_PRIZES_BY_COUNT[winningWhiteBallsCount];
+}
+
+// TODO wire up to real data
+function getDrawPickForDate(drawDate) {
+  return {
+    whiteBalls: new Set([1, 2, 3, 4, 5]),
+    powerBall: 4
+  };
 }
 
 function calculateTicketPickPrizes(ticket) {
-  const gameResults = getGameResultsForDrawDate(ticket.drawDate);
-  if (!gameResults) {
+  const drawnPick = getDrawPickForDate(ticket.drawDate);
+  if (!drawnPick) {
     return null;
   }
 
-  // TODO replace mocked implementation
-  return [
-    {
-      won: false
-    },
-    {
-      won: true,
-      prize: 20,
-      whiteBalls: [1, 2, 3],
-      powerBall: 3
-    }
-  ];
-}
+  const drawnWhiteBallsSet = drawnPick.whiteBalls;
 
+  return ticket
+    .picks
+    .map((pick) => {
+      const winningWhiteBalls = pick.whiteBalls.filter(whiteBall => drawnWhiteBallsSet.has(whiteBall));
+      const winningPowerBall = pick.powerBall === drawnPick.powerBall;
+      const powerBallWon = 0 < winningPowerBall;
+      const prize = calculatePrize(powerBallWon, winningWhiteBalls.length);
+
+      return {
+        won: !!prize,
+        prize: prize,
+        whiteBalls: winningWhiteBalls,
+        powerBall: winningPowerBall
+      };
+    });
+}
 
 module.exports = calculateTicketPickPrizes;

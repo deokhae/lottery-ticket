@@ -12,40 +12,80 @@ const { checkTicket } = require(`${APP_PATH}/controllers`);
 const VALID_REQUEST_BODY = deepFreeze({
   picks: [
     {
-      whiteBalls: [1, 2, 3, 4, 5],
+      whiteBalls: [1, 2, 3, 4, 5], // Grand prize
       powerBall: 1
     },
     {
-      whiteBalls: [1, 2, 6, 4, 5],
+      whiteBalls: [1, 2, 3, 4, 5], // Grand prize
       powerBall: 1
+    },
+    {
+      whiteBalls: [1, 2, 3, 4, 5], // All white balls
+      powerBall: 2
+    },
+    {
+      whiteBalls: [1, 2, 69, 4, 5], // Four white balls
+      powerBall: 2
+    },
+    {
+      whiteBalls: [6, 7, 8, 9, 10], // Just the power ball
+      powerBall: 1
+    },
+    {
+      whiteBalls: [6, 7, 8, 9, 10], // No luck
+      powerBall: 3
     }
   ],
   drawDate: '2017-11-09'
 });
 
 const PICK_PRIZES = deepFreeze([
-  { won: false, prize: null, whiteBalls: null, powerBall: null },
-  { won: true, prize: 1000000, whiteBalls: [1, 2, 4, 5], powerBall: 1 }
+  { won: true, prize: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }, // Grand prize
+  { won: true, prize: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }, // Grand prize
+  { won: true, prize: 1000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: null }, // All white balls
+  { won: true, prize: 100, whiteBalls: [1, 2, 4, 5], powerBall: null }, // Four white balls
+  { won: true, prize: 4, whiteBalls: null, powerBall: 1 }, // Just the power ball
+  { won: false, prize: null, whiteBalls: null, powerBall: null } // No luck
 ]);
 
 const EXPECTED_RESPONSE_BODY = deepFreeze({
   picks: [
-    {
+    { // Grand prize
       whiteBalls: [1, 2, 3, 4, 5],
       powerBall: 1,
-      prize: { won: false, amount: null, whiteBalls: null, powerBall: null }
+      prize: { won: true, amount: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }
     },
-    {
-      whiteBalls: [1, 2, 6, 4, 5],
+    { // Grand prize
+      whiteBalls: [1, 2, 3, 4, 5],
       powerBall: 1,
-      prize: { won: true, amount: 1000000, whiteBalls: [1, 2, 4, 5], powerBall: 1 }
+      prize: { won: true, amount: 'GRAND_PRIZE', whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }
+    },
+    { // All white balls
+      whiteBalls: [1, 2, 3, 4, 5],
+      powerBall: 2,
+      prize: { won: true, amount: 1000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: null }
+    },
+    { // Four white balls
+      whiteBalls: [1, 2, 69, 4, 5],
+      powerBall: 2,
+      prize: { won: true, amount: 100, whiteBalls: [1, 2, 4, 5], powerBall: null }
+    },
+    { // Just the power ball
+      whiteBalls: [6, 7, 8, 9, 10],
+      powerBall: 1,
+      prize: { won: true, amount: 4, whiteBalls: null, powerBall: 1 }
+    },
+    { // No luck
+      whiteBalls: [6, 7, 8, 9, 10],
+      powerBall: 3,
+      prize: { won: false, amount: null, whiteBalls: null, powerBall: null }
     }
   ],
   drawDate: new Date('2017-11-09T00:00:00.000Z'),
-  summary: { prizeTotal: 1000000, errors: [] }
+  summary: { summablePrizeTotal: 1000104, wonGrandPrizeCount: 2, errors: [] }
 });
 
-test('Check Valid Ticket', async t => {
+test('Check Valid Ticket 2', async t => {
   td.when(calculateTicketPickPrizes(td.matchers.anything())).thenReturn(PICK_PRIZES);
   const res = { status: td.function(), json: td.function() };
 

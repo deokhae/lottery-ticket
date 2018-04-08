@@ -59,19 +59,7 @@ async function getValidTicket(req) {
   }
 }
 
-async function checkTicketService(req) {
-  const ticket = _.cloneDeep(await getValidTicket(req));
-  ticket.summary = {
-    prizeTotal: 0,
-    errors: []
-  };
-
-  const prizePicks = calculateTicketPickPrizes(ticket);
-  if (!prizePicks) {
-    ticket.summary.errors.push({ drawDate: 'NOT_FOUND' });
-    return ticket;
-  }
-
+function assignPrizesToPicks(ticket, prizePicks) {
   prizePicks.forEach((prizePick, index) => {
     const {
       won = false,
@@ -84,14 +72,37 @@ async function checkTicketService(req) {
       .picks[index]
       .prize = { won, amount, whiteBalls, powerBall };
   });
+}
 
-  ticket.summary.prizeTotal = ticket
+function assignPrizeSummaryToTicket(ticket) {
+  ticket
     .picks
     .filter((pick) => pick.prize.won)
-    .reduce(
-      (prizeTotal, pick) => prizeTotal + pick.prize.amount,
-      0);
+    .forEach((pick) => {
+      if (pick.prize.amount === 'GRAND_PRIZE') {
+        ticket.summary.wonGrandPrizeCount++;
+      } else {
+        ticket.summary.summablePrizeTotal += pick.prize.amount;
+      }
+    });
+}
 
+async function checkTicketService(req) {
+  const ticket = _.cloneDeep(await getValidTicket(req));
+  ticket.summary = {
+    summablePrizeTotal: 0,
+    wonGrandPrizeCount: 0,
+    errors: []
+  };
+
+  const prizePicks = calculateTicketPickPrizes(ticket);
+  if (!prizePicks) {
+    ticket.summary.errors.push({ drawDate: 'NOT_FOUND' });
+    return ticket;
+  }
+
+  assignPrizesToPicks(ticket, prizePicks);
+  assignPrizeSummaryToTicket(ticket);
   return ticket;
 }
 
