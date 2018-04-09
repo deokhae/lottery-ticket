@@ -27,7 +27,7 @@ function calculateTicketPickPrizes(ticket, draw) {
     .picks
     .map((pick) => {
       const winningWhiteBalls = pick.whiteBalls.filter(whiteBall => drawnWhiteBallsSet.has(whiteBall));
-      const winningPowerBall = pick.powerBall === draw.powerBall;
+      const winningPowerBall = pick.powerBall === draw.powerBall ? pick.powerBall : null;
       const powerBallWon = 0 < winningPowerBall;
 
       let prize = calculatePrize(powerBallWon, winningWhiteBalls.length);
@@ -38,7 +38,7 @@ function calculateTicketPickPrizes(ticket, draw) {
       return {
         won: !!prize,
         prize: prize,
-        whiteBalls: winningWhiteBalls,
+        whiteBalls: 0 < winningWhiteBalls.length ? winningWhiteBalls : null,
         powerBall: winningPowerBall
       };
     });

@@ -5,7 +5,7 @@ const td = require('testdouble');
 const _ = require('lodash');
 
 const APP_PATH = '../../../app';
-const calculateTicketPickPrizes = td.replace(`${APP_PATH}/models/calculate-ticket-pick-prizes`);
+const { fetchDraw } = td.replace(`${APP_PATH}/game-results`);
 const { checkTicket } = require(`${APP_PATH}/controllers`);
 
 
@@ -35,14 +35,12 @@ const VALID_REQUEST_BODY = deepFreeze({
   drawDate: '2017-11-09'
 });
 
-// NOTE: Theoretically, someone could win the grand prize twice which would throw the math off.
-const PICK_PRIZES = deepFreeze([
-  { won: true, prize: 74000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: 1 }, // Grand prize
-  { won: true, prize: 1000000, whiteBalls: [1, 2, 3, 4, 5], powerBall: null }, // All white balls
-  { won: true, prize: 100, whiteBalls: [1, 2, 4, 5], powerBall: null }, // Four white balls
-  { won: true, prize: 4, whiteBalls: null, powerBall: 1 }, // Just the power ball
-  { won: false, prize: null, whiteBalls: null, powerBall: null } // No luck
-]);
+const DRAW = deepFreeze({
+  date: '2017-11-09',
+  whiteBalls: [1, 2, 3, 4, 5],
+  powerBall: 1,
+  grandPrizeAmount: 74000000
+});
 
 const EXPECTED_RESPONSE_BODY = deepFreeze({
   picks: [
@@ -72,12 +70,12 @@ const EXPECTED_RESPONSE_BODY = deepFreeze({
       prize: { won: false, amount: null, whiteBalls: null, powerBall: null }
     }
   ],
-  drawDate: new Date('2017-11-09T00:00:00.000Z'),
+  drawDate: '2017-11-09',
   summary: { prizeTotal: 75000104, errors: [] }
 });
 
-test('Check Valid Ticket 2', async t => {
-  td.when(calculateTicketPickPrizes(td.matchers.anything())).thenReturn(PICK_PRIZES);
+test('Check Valid Ticket', async t => {
+  td.when(fetchDraw('2017-11-09')).thenReturn(DRAW);
   const res = { status: td.function(), json: td.function() };
 
   await checkTicket({ body: VALID_REQUEST_BODY }, res);
@@ -89,8 +87,9 @@ test('Check Valid Ticket 2', async t => {
 
 /* eslint ava/no-skip-test: 0 */
 
-test.skip('Check Valid Ticket For Unrecognized Draw Date (FIX STATE CONFLICT W/ previous test - NEED testdouble skills)', async t => {
-  td.when(calculateTicketPickPrizes(td.matchers.anything())).thenReturn(null);
+// NOTE: This works if it is the only test in this file run using 'test.only'
+test.skip('Check Valid Ticket For Unrecognized Draw Date (FIX STATE CONFLICT w/ previous test - NEED testdouble skills)', async t => {
+  td.when(fetchDraw('2017-11-07')).thenReturn(DRAW);
   const res = { status: td.function(), json: td.function() };
 
   await checkTicket({ body: VALID_REQUEST_BODY }, res);

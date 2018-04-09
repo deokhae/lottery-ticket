@@ -10,7 +10,7 @@ async function initialize({ log = false } = {}) {
     console.log(`${JSON.stringify(gameResults, null, 2)}\n`);
   }
 
-  return !gameResults;
+  return !!gameResults;
 }
 
 module.exports = initialize;

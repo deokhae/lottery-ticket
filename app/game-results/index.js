@@ -73,7 +73,7 @@ function mapGameResultsToDrawsLookup(gameResults) {
       {});
 }
 
-// TODO Optimize so that each drawing can be retrieved individually, allowing for better scaling.
+// TODO Optimize so that each draw can be retrieved individually, allowing for better scaling.
 //      As is, the entire set of drawings are retrieved.
 async function fetchAndSet() {
   const gameResults = await fetchData({ onlyIfModified: true });
