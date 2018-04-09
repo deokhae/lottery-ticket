@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Joi = require('joi');
 
+const { fetchDraw } = require('../game-results');
 const calculateTicketPickPrizes = require('../models/calculate-ticket-pick-prizes');
 const { BadRequestError } = require('../errors');
 
@@ -47,6 +48,7 @@ const ticketSchema = Joi
       .date()
       .iso()
       .max('now')
+      .raw()
       .required()
   });
 
@@ -89,13 +91,15 @@ async function checkTicketService(req) {
     errors: []
   };
 
-  const prizePicks = calculateTicketPickPrizes(ticket);
-  if (!prizePicks) {
+  const draw = fetchDraw(ticket.drawDate.substring(0, 10));
+  if (!draw) {
     ticket.summary.errors.push({ drawDate: 'NOT_FOUND' });
     return ticket;
   }
 
+  const prizePicks = calculateTicketPickPrizes(ticket, draw);
   assignPrizesToPicks(ticket, prizePicks);
+
   ticket.summary.prizeTotal = calculatePrizeTotal(ticket);
   return ticket;
 }

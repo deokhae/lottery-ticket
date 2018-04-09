@@ -20,33 +20,19 @@ function calculatePrize(powerBallWon, winningWhiteBallsCount) {
   return WHITEBALL_ONLY_PRIZES_BY_COUNT[winningWhiteBallsCount];
 }
 
-// TODO wire up to real data
-function getDrawPickForDate(drawDate) {
-  return {
-    whiteBalls: new Set([1, 2, 3, 4, 5]),
-    powerBall: 4,
-    grandPrizeAmount: 74000000
-  };
-}
-
-function calculateTicketPickPrizes(ticket) {
-  const drawnPick = getDrawPickForDate(ticket.drawDate);
-  if (!drawnPick) {
-    return null;
-  }
-
-  const drawnWhiteBallsSet = drawnPick.whiteBalls;
+function calculateTicketPickPrizes(ticket, draw) {
+  const drawnWhiteBallsSet = new Set(draw.whiteBalls);
 
   return ticket
     .picks
     .map((pick) => {
       const winningWhiteBalls = pick.whiteBalls.filter(whiteBall => drawnWhiteBallsSet.has(whiteBall));
-      const winningPowerBall = pick.powerBall === drawnPick.powerBall;
+      const winningPowerBall = pick.powerBall === draw.powerBall;
       const powerBallWon = 0 < winningPowerBall;
 
       let prize = calculatePrize(powerBallWon, winningWhiteBalls.length);
       if (prize === GRAND_PRIZE_AMOUNT) {
-        prize = drawnPick.grandPrizeAmount;
+        prize = draw.grandPrizeAmount;
       }
 
       return {
