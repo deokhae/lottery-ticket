@@ -1,4 +1,4 @@
-# API
+# Check Powerball Ticket API
 
 Powerball is a popular US lottery game with draws twice a week.  For the purposes of this exercise, a Powerball lottery "ticket" includes one or more "picks".  Each "pick" is a set of 5 integers (from `1`-`69`) along with a 6th integer (the _Powerball_, from `1`-`26`) that the user has chosen to play during a specific draw. 
 
